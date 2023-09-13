@@ -33,25 +33,4 @@ const getUserByEmail = async (email) => {
   }
 };
 
-const createUsers = async (email, gender, age, nickname, height, weight) => {
-  try {
-    createUserResult = await dataSource.query(
-      `INSERT INTO users (email, nickname)
-     VALUES (?, ?)`,
-      [email, nickname]
-    );
-    const userId = await createUserResult.insertId;
-    await dataSource.query(
-      `INSERT INTO member_profiles (user_id, gender, age, height, weight)
-     VALUES (?, ?, ?, ?, ?)`,
-      [userId, gender, age, height, weight]
-    );
-  } catch (err) {
-    const error = new Error('dataSource Error');
-    error.statusCode = 400;
-
-    throw error;
-  }
-};
-
-module.exports = { getUserByEmail, createUsers };
+module.exports = { getUserByEmail};
