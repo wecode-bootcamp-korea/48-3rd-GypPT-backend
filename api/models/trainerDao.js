@@ -7,6 +7,7 @@ const getTrainerList = async (offset, pageSize) => {
       SELECT
         u.id,
         tg.emoji,
+        tg.name emojiName,
         u.nickname nickName,
         u.profile_image profileImage,
         tp.score,
