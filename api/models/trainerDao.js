@@ -12,8 +12,7 @@ const getTrainerList = async (offset, pageSize) => {
         u.profile_image profileImage,
         tp.score,
         (
-          SELECT 
-            JSON_ARRAYAGG(content)
+          SELECT JSON_ARRAYAGG(content)
           FROM (
             SELECT DISTINCT tc.content
             FROM trainer_careers tc
@@ -21,8 +20,7 @@ const getTrainerList = async (offset, pageSize) => {
           ) AS careerSub
         ) career,
         (
-          SELECT
-            JSON_ARRAYAGG(content)
+          SELECT JSON_ARRAYAGG(content)
           FROM (
             SELECT DISTINCT tl.content
             FROM trainer_licenses tl
@@ -30,8 +28,7 @@ const getTrainerList = async (offset, pageSize) => {
           ) AS licenseSub
         ) license,
         (
-          SELECT
-            JSON_ARRAYAGG(content)
+          SELECT JSON_ARRAYAGG(content)
           FROM (
             SELECT DISTINCT ta.content
             FROM trainer_awards ta
