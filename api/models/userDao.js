@@ -1,4 +1,5 @@
 const { dataSource } = require('./dataSource');
+
 const getUserByEmail = async (email) => {
   try {
     const user = await dataSource.query(
@@ -7,16 +8,16 @@ const getUserByEmail = async (email) => {
       u.email,
       u.nickname,
       u.profile_image,
-      mp.user_id,
-      mp.member_grade_id,
+      mp.user_id AS userId,
+      mp.member_grade_id AS memberGradeId,
       mp.height,
       mp.weight,
       mp.age,
       mp.gender,
       mp.point,
-      um.membership_id,
-      um.start_date,
-      um.end_date
+      um.membership_id AS membershipId,
+      um.start_date AS startDate,
+      um.end_date AS endDate
     FROM USERS u
     LEFT JOIN member_profiles mp ON u.id = mp.user_id
     LEFT JOIN users_memberships um ON u.id = um.user_id
@@ -33,18 +34,18 @@ const getUserByEmail = async (email) => {
   }
 };
 
-const createUsers = async (email, gender, age, nickname, height, weight) => {
+const createUser = async (email, gender, age) => {
   try {
     createUserResult = await dataSource.query(
-      `INSERT INTO users (email, nickname)
-     VALUES (?, ?)`,
-      [email, nickname]
+      `INSERT INTO users (email)
+     VALUES (?)`,
+      [email]
     );
     const userId = await createUserResult.insertId;
     await dataSource.query(
-      `INSERT INTO member_profiles (user_id, gender, age, height, weight)
-     VALUES (?, ?, ?, ?, ?)`,
-      [userId, gender, age, height, weight]
+      `INSERT INTO member_profiles (user_id, gender, age)
+     VALUES (?, ?, ?)`,
+      [userId, gender, age]
     );
   } catch (err) {
     const error = new Error('dataSource Error');
@@ -54,4 +55,118 @@ const createUsers = async (email, gender, age, nickname, height, weight) => {
   }
 };
 
-module.exports = { getUserByEmail, createUsers };
+const checkDuplicateNickname = async (nickname) => {
+  try {
+    const [result] = await dataSource.query(
+      `SELECT nickname FROM users WHERE nickname=?`,
+      [nickname]
+    );
+    return result;
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+
+    throw error;
+  }
+};
+
+const addAdditionalInfo = async (email, nickname, height, weight) => {
+  try {
+    await dataSource.query(`UPDATE users SET nickname =? WHERE email=?;`, [
+      nickname,
+      email,
+    ]);
+    const [{ id: userId }] = await dataSource.query(
+      `SELECT id FROM users WHERE email = ?`,
+      [email]
+    );
+    await dataSource.query(
+      `UPDATE member_profiles SET height = ?, weight = ? WHERE user_id = ?`,
+      [height, weight, userId]
+    );
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+
+    throw error;
+  }
+};
+
+const getUserType = async (email) => {
+  try {
+    const [userType] = await dataSource.query(
+      `SELECT 
+        CASE 
+          WHEN EXISTS(
+            SELECT tf.user_id 
+            FROM trainer_profiles tf 
+            INNER JOIN users u 
+            WHERE u.email = ?
+          ) THEN 'trainer' 
+          WHEN EXISTS(
+            SELECT mf.user_id 
+            FROM member_profiles mf 
+            INNER JOIN users u 
+            WHERE u.email = ?
+          ) THEN 'member'
+        END AS user_type`,
+      [email, email]
+    );
+    return userType;
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+// const getMemberGrade = async (email) => {
+//   try {
+//     const [memberGrade] = dataSource.query(
+//       `SELECT mg.name AS memberGrade FROM users u INNER JOIN member_profiles mp ON u.id = mp.user_id INNER JOIN member_grades mg ON mp.member_grade_id = mg.id WHERE u.email = ?`,
+//       [email]
+//     );
+//     return memberGrade;
+//   } catch (err) {
+//     const error = new Error('dataSource Error');
+//     error.statusCode = 400;
+//     throw error;
+//   }
+// };
+
+// const getTrainerGrade = async (email) => {
+//   try {
+//     const [trainerGrade] = dataSource.query(
+//       `SELECT tg.name AS trainerGrade FROM users u INNER JOIN trainer_profiles tp ON u.id = tp.user_id INNER JOIN trainer_grades tg ON tp.trainer_grade_id = tg.id WHERE u.email = ?`,
+//       [email]
+//     );
+//     return trainerGrade;
+//   } catch (err) {
+//     const error = new Error('dataSource Error');
+//     error.statusCode = 400;
+//     throw error;
+//   }
+// };
+
+const getGrade = async (userType, email) => {
+  try {
+    const [grade] = await dataSource.query(
+      `SELECT g.name AS grade FROM users u INNER JOIN ${userType}_profiles p ON u.id = p.user_id INNER JOIN ${userType}_grades g ON p.${userType}_grade_id = g.id WHERE u.email = ?`,
+      [email]
+    );
+    return grade;
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+module.exports = {
+  getUserByEmail,
+  createUser,
+  checkDuplicateNickname,
+  addAdditionalInfo,
+  getUserType,
+  getGrade,
+};
