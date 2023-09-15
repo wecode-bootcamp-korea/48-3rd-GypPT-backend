@@ -5,8 +5,8 @@ const { managementRouter } = require('./managementRouter');
 
 const router = express.Router();
 
-router.use('/user', userRouter);
 router.use('/trainers', trainerRouter);
 router.use('/custom', managementRouter);
+router.use('/users', userRouter);
 
 module.exports = { router };

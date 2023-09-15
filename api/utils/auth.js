@@ -11,7 +11,9 @@ const loginRequired = async (req, res, next) => {
     }
 
     const payload = await jwt.verify(accessToken, process.env.JWT_SECRET);
-    const user = await userService.getUserByEmail(payload['kakaoEmail']);
+    const user = await userService.getUserByEmail(payload['email']);
+    const userType = await payload.userType;
+    const grade = await payload.grade;
 
     if (!user) {
       const error = new Error('USER_DOES_NOT_EXIST');
@@ -20,6 +22,8 @@ const loginRequired = async (req, res, next) => {
     }
 
     req.user = user;
+    res.locals.userType = userType;
+    res.locals.grade = grade;
     next();
   } catch {
     const error = new Error('INVALID_ACCESS_TOKEN');
@@ -27,4 +31,5 @@ const loginRequired = async (req, res, next) => {
     return res.status(error.statusCode).json({ message: error.message });
   }
 };
+
 module.exports = { loginRequired };
