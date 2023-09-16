@@ -6,8 +6,8 @@ const getMembershipByUser = async (userId) => {
       `
      SELECT 
      m.name as membershipName,
-     u.start_date as startDate,
-     u.end_date as endDate
+     date_format(u.start_date, '%Y-%m-%d') as startDate,
+     date_format(u.end_date, '%Y-%m-%d') as endDate
      FROM members_memberships u
      JOIN memberships m
      ON m.id = u.membership_id
@@ -78,7 +78,6 @@ const membershipStart = async (startDate, endDate, membershipId, userId) => {
          end_date = ?
      WHERE membership_id = ?
      AND member_id = ?;
-     
     `,
       [startDate, endDate, membershipId, userId]
     );

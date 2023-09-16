@@ -12,9 +12,9 @@ const getManagement = async (userId, weekday) => {
   ]);
 
   return {
-    membership: membershipResult,
-    exercise: exerciseResult,
-    diet: dietResult,
+    membership: membershipResult[0],
+    exercise: exerciseResult[0],
+    diet: dietResult[0],
   };
 };
 
