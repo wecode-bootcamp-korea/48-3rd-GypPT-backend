@@ -3,13 +3,16 @@ const { catchAsync } = require('../utils/error');
 const { addDays, format } = require('date-fns');
 
 const getManagement = catchAsync(async (req, res) => {
-  const { userId, weekday } = req.query;
+  const userId = req.user.userId;
+  const { weekday } = req.query;
   const membership = await managementService.getManagement(userId, weekday);
-  res.json(membership);
+
+  res.status(200).json(membership);
 });
 
 const membershipStart = catchAsync(async (req, res) => {
-  const { userId, startDate } = req.body;
+  const userId = req.user.userId;
+  const { startDate } = req.body;
 
   const startDateObject = new Date(startDate);
   const after30Days = addDays(startDateObject, 30);
