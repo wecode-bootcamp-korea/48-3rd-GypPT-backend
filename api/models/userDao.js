@@ -120,34 +120,6 @@ const getUserType = async (email) => {
   }
 };
 
-// const getMemberGrade = async (email) => {
-//   try {
-//     const [memberGrade] = dataSource.query(
-//       `SELECT mg.name AS memberGrade FROM users u INNER JOIN member_profiles mp ON u.id = mp.user_id INNER JOIN member_grades mg ON mp.member_grade_id = mg.id WHERE u.email = ?`,
-//       [email]
-//     );
-//     return memberGrade;
-//   } catch (err) {
-//     const error = new Error('dataSource Error');
-//     error.statusCode = 400;
-//     throw error;
-//   }
-// };
-
-// const getTrainerGrade = async (email) => {
-//   try {
-//     const [trainerGrade] = dataSource.query(
-//       `SELECT tg.name AS trainerGrade FROM users u INNER JOIN trainer_profiles tp ON u.id = tp.user_id INNER JOIN trainer_grades tg ON tp.trainer_grade_id = tg.id WHERE u.email = ?`,
-//       [email]
-//     );
-//     return trainerGrade;
-//   } catch (err) {
-//     const error = new Error('dataSource Error');
-//     error.statusCode = 400;
-//     throw error;
-//   }
-// };
-
 const getGrade = async (userType, email) => {
   try {
     const [grade] = await dataSource.query(
