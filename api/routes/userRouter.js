@@ -4,7 +4,7 @@ const { loginRequired } = require('../utils/auth');
 
 const userRouter = express.Router();
 
-userRouter.post('/kakaoSignIn', userController.kakaoSignIn);
-userRouter.post('/kakaoSignUp', userController.kakaoSignUp);
-userRouter.post('/duplicateNickname', userController.checkDuplicateNickname);
+userRouter.post('/kakao-sign-in', userController.kakaoSignIn);
+userRouter.post('/kakao-sign-up', userController.kakaoSignUp);
+userRouter.post('/duplicate-nickname', userController.checkDuplicateNickname);
 module.exports = { userRouter };
