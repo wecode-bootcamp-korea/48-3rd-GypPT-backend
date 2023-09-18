@@ -10,7 +10,7 @@ paymentRouter.get(
   loginRequired,
   paymentController.getMembershipList
 );
-paymentRouter.get(
+paymentRouter.post(
   '/trainer-information',
   loginRequired,
   paymentController.getMatchingTrainer

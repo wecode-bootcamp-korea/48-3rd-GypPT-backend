@@ -1,4 +1,5 @@
 const paymentService = require('../services/paymentService');
+const userService = require('../services/userService');
 const { catchAsync } = require('../utils/error');
 
 const getMembershipList = catchAsync(async (req, res) => {
@@ -29,6 +30,11 @@ const payForMembership = catchAsync(async (req, res) => {
     membershipId,
     trainerId,
     paymentsMethodId
+  );
+
+  res.locals.grade = await userService.getGrade(
+    res.locals.userType,
+    req.user.email
   );
 
   res

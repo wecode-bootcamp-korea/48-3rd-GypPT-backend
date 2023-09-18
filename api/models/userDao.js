@@ -29,7 +29,6 @@ const getUserByEmail = async (email) => {
   } catch (err) {
     const error = new Error('dataSource Error');
     error.statusCode = 400;
-
     throw error;
   }
 };
