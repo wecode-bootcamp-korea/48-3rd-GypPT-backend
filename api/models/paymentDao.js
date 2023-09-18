@@ -6,10 +6,10 @@ const getMembershipList = async (memberId) => {
       `
       SELECT
         m.id,
-        m.name AS membershipName,
+        m.name,
         m.description,
         m.price,
-        JSON_ARRAYAGG(mb.content) AS benefits
+        JSON_ARRAYAGG(mb.content) AS benefit
       FROM memberships m
       LEFT JOIN membership_benefits mb ON mb.membership_id = m.id
       WHERE EXISTS (SELECT 1 FROM users WHERE id = ?)
@@ -28,7 +28,7 @@ const getMembershipList = async (memberId) => {
 
 const getMatchingTrainer = async (trainerId, memberId) => {
   try {
-    const data = await dataSource.query(
+    const [data] = await dataSource.query(
       `
       SELECT
         u.id,
@@ -143,12 +143,21 @@ const payForMembership = async (
       [memberId, membershipId, trainerId, memberId]
     );
 
-    await dataSource.query(
+    const result = await dataSource.query(
       `
       INSERT INTO payments (user_id, membership_id, payments_method_id, price)
       VALUES (?, ?, ?, (SELECT price FROM memberships WHERE id = ?));
       `,
       [memberId, membershipId, paymentsMethodId, membershipId]
+    );
+
+    await queryRunner.query(
+      `
+      UPDATE member_profiles 
+      SET member_grade_id = ?
+      WHERE user_id = ?
+      `,
+      [membershipId, memberId]
     );
 
     await queryRunner.query(
@@ -179,9 +188,9 @@ const payForMembership = async (
       LEFT JOIN memberships m ON m.id = p.membership_id 
       LEFT JOIN payments_method pm ON pm.id = p.payments_method_id
       LEFT JOIN member_profiles mp ON mp.user_id = u.id
-      WHERE p.user_id = ?;
+      WHERE p.user_id = ? AND p.id = ?;
       `,
-      [memberId]
+      [memberId, result.insertId]
     );
 
     await queryRunner.commitTransaction();
