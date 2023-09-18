@@ -7,4 +7,10 @@ const getPostListAll = catchAsync(async (req, res) => {
   res.status(201).json({ data: allPosts });
 });
 
-module.exports = { getPostListAll };
+const getPostListDetail = catchAsync(async (req, res) => {
+  const postId = req.params.postId;
+  const post = await postService.getPostListDetail(postId);
+  res.status(201).json({ data: post });
+});
+
+module.exports = { getPostListAll, getPostListDetail };

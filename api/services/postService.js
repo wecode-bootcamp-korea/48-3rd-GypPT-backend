@@ -4,4 +4,8 @@ const getPostListAll = async () => {
   return await postDao.getPostListAll();
 };
 
-module.exports = { getPostListAll };
+const getPostListDetail = async (postId) => {
+  return await postDao.getPostListDetail(postId);
+};
+
+module.exports = { getPostListAll, getPostListDetail };
