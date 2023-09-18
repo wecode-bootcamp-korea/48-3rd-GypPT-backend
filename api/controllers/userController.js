@@ -2,8 +2,8 @@ const userService = require('../services/userService');
 const { catchAsync } = require('../utils/error');
 
 const kakaoSignIn = catchAsync(async (req, res) => {
-  const authCode = await req.query.code;
-  const endPoint = await req.path;
+  const authCode = req.query.code;
+  const endPoint = req.path;
   const redirectUri = await userService.getRedirectUri(endPoint);
   const kakaoAccessToken = await userService.getKaKaoAccessToken(
     authCode,
@@ -16,27 +16,15 @@ const kakaoSignIn = catchAsync(async (req, res) => {
   if (!user) {
     await userService.createUser(email, gender, age);
     await res.status(401).json({
-      message: 'SIGN UP REQUIRED',
+      message: 'NEED ADDITIONAL INFORMATION',
     });
-  } else if (
-    user.email &&
-    user.age &&
-    user.gender &&
-    !user.nickname &&
-    !user.height &&
-    !user.weight
-  ) {
+  }
+  const { nickname, height, weight } = user;
+  if (!nickname || !height || !weight) {
     await res.status(401).json({
-      message: 'SIGN UP REQUIRED',
+      message: 'NEED ADDITIONAL INFORMATION',
     });
-  } else if (
-    user.email &&
-    user.age &&
-    user.gender &&
-    user.nickname &&
-    user.height &&
-    user.weight
-  ) {
+  } else if (nickname && height && weight) {
     const token = await userService.createToken(email);
     await res
       .status(200)
@@ -45,8 +33,8 @@ const kakaoSignIn = catchAsync(async (req, res) => {
 });
 
 const kakaoSignUp = catchAsync(async (req, res) => {
-  const authCode = await req.query.code;
-  const endPoint = await req.path;
+  const authCode = req.query.code;
+  const endPoint = req.path;
   const redirectUri = await userService.getRedirectUri(endPoint);
   const kakaoAccessToken = await userService.getKaKaoAccessToken(
     authCode,
@@ -71,7 +59,7 @@ const kakaoSignUp = catchAsync(async (req, res) => {
 });
 
 const checkDuplicateNickname = catchAsync(async (req, res) => {
-  const { nickname } = await req.body;
+  const { nickname } = req.body;
   const result = await userService.checkDuplicateNickname(nickname);
 
   result

@@ -58,7 +58,7 @@ const getUserByEmail = async (email) => {
 };
 
 const getUserType = async (email) => {
-  const { user_type: userType } = await userDao.getUserType(email);
+  const { userType: userType } = await userDao.getUserType(email);
   return userType;
 };
 

@@ -15,12 +15,12 @@ const getUserByEmail = async (email) => {
       mp.age,
       mp.gender,
       mp.point,
-      um.membership_id AS membershipId,
-      um.start_date AS startDate,
-      um.end_date AS endDate
+      mm.membership_id AS membershipId,
+      mm.start_date AS startDate,
+      mm.end_date AS endDate
     FROM USERS u
     LEFT JOIN member_profiles mp ON u.id = mp.user_id
-    LEFT JOIN users_memberships um ON u.id = um.user_id
+    LEFT JOIN members_memberships mm ON u.id = mm.user_id
     WHERE u.email = ?;
   `,
       [email]
@@ -100,16 +100,16 @@ const getUserType = async (email) => {
           WHEN EXISTS(
             SELECT tf.user_id 
             FROM trainer_profiles tf 
-            INNER JOIN users u 
+            INNER JOIN users u ON tf.user_id = u.id
             WHERE u.email = ?
           ) THEN 'trainer' 
           WHEN EXISTS(
             SELECT mf.user_id 
             FROM member_profiles mf 
-            INNER JOIN users u 
+            INNER JOIN users u ON mf.user_id = u.id
             WHERE u.email = ?
           ) THEN 'member'
-        END AS user_type`,
+        END AS userType`,
       [email, email]
     );
     return userType;
