@@ -33,10 +33,58 @@ const getPostListAll = async () => {
 
     return postListWithComments;
   } catch (error) {
-    console.log(error);
     const newError = new Error('dataSource Error');
     newError.status = 400;
     throw newError;
+  }
+};
+
+const getPostListDetail = async (postId) => {
+  try {
+    const postListDetail = await dataSource.query(
+      `
+      SELECT
+        t.id AS threadId,
+        mg.name AS memberGrades,
+        u.nickname,
+        tt.id AS category,
+        t.title,
+        t.content,
+        ti.image_url AS imageUrl,
+        DATE_FORMAT(t.created_at, '%Y.%m.%d') AS time,
+        (
+      SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+        'commentId', c.id,
+        'commentTime', DATE_FORMAT(c.created_at, '%Y-%m-%d'),
+        'nickname', cu.nickname,
+        'content', c.content
+        )
+      )
+      FROM (
+        SELECT *
+        FROM comments
+        WHERE thread_id = t.id
+        ORDER BY created_at DESC
+        LIMIT 10000
+        ) c
+      LEFT JOIN users cu ON cu.id = c.user_id
+        ) AS comments
+      FROM threads t
+      LEFT JOIN thread_types tt ON t.thread_types_id = tt.id
+      LEFT JOIN thread_images ti ON t.id = ti.thread_id
+      LEFT JOIN users u ON u.id = t.user_id
+      LEFT JOIN member_profiles mp ON mp.user_id = u.id
+      LEFT JOIN member_grades mg ON mp.member_grade_id = mg.id
+      WHERE t.id = ?
+      GROUP BY t.id, tt.id, mg.name, u.nickname, t.title, t.content, ti.image_url, t.created_at
+      ORDER BY t.created_at DESC;
+      `,
+      [postId]
+    );
+    return postListDetail;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -49,4 +97,4 @@ const getCommentsCountForThread = async (threadId) => {
   return result[0].commentCount;
 };
 
-module.exports = { getPostListAll };
+module.exports = { getPostListAll, getPostListDetail };
