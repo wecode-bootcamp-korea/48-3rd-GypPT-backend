@@ -140,6 +140,7 @@ const getMyPage = async (userId) => {
       SELECT
         u.nickname,
         g.emoji as emoji,
+        g.name as grade,
         p.height as height,
         p.weight as weight
       FROM users u
@@ -157,6 +158,28 @@ const getMyPage = async (userId) => {
   }
 };
 
+const updateMypage = async (nickname, height, weight, userId) => {
+  try {
+    return await dataSource.query(
+      `
+      UPDATE users u
+      INNER JOIN member_profiles p 
+      ON u.id = p.user_id
+      SET 
+      u.nickname = IFNULL(?, u.nickname),
+      p.height = IFNULL(?, p.height),
+      p.weight = IFNULL(?, p.weight)
+      WHERE u.id = ?;
+    `,
+      [nickname, height, weight, userId]
+    );
+  } catch {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getUserByEmail,
   createUser,
@@ -165,4 +188,5 @@ module.exports = {
   getUserType,
   getGrade,
   getMyPage,
+  updateMypage,
 };

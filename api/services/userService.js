@@ -98,6 +98,10 @@ const getMyPage = async (userId) => {
   return await userDao.getMyPage(userId);
 };
 
+const updateMypage = async (nickname, height, weight, userId) => {
+  return await userDao.updateMypage(nickname, height, weight, userId);
+};
+
 module.exports = {
   getRedirectUri,
   getKaKaoAccessToken,
@@ -111,4 +115,5 @@ module.exports = {
   addAdditionalInfo,
   getGrade,
   getMyPage,
+  updateMypage,
 };
