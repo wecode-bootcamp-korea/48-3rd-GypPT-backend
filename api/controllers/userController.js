@@ -26,6 +26,7 @@ const kakaoSignIn = catchAsync(async (req, res) => {
     });
   } else if (nickname && height && weight) {
     const token = await userService.createToken(email);
+
     await res
       .status(200)
       .json({ authorization: token, message: 'SIGN IN COMPLETED' });
