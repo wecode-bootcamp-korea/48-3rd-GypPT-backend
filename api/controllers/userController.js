@@ -15,13 +15,13 @@ const kakaoSignIn = catchAsync(async (req, res) => {
   const user = await userService.getUserByEmail(email);
   if (!user) {
     await userService.createUser(email, gender, age);
-    await res.status(202).json({
+    return await res.status(200).json({
       message: 'BASIC REGISTRAION SUCCESSFUL. NEED ADDITIONAL INFORMATION',
     });
   }
   const { nickname, height, weight } = user;
   if (!nickname || !height || !weight) {
-    await res.status(202).json({
+    await res.status(200).json({
       message: 'NEED ADDITIONAL INFORMATION',
     });
   } else if (nickname && height && weight) {
