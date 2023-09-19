@@ -11,4 +11,14 @@ const createConsultant = catchAsync(async (req, res) => {
         res.status(201).json({message : "success"})   
     });
 
-module.exports = { createConsultant };
+const deleteConsultant = catchAsync(async (req, res) => {
+
+    const threadId = req.params.postId
+
+    const thread = await consultantService.deleteConsultantThreads(threadId);
+    
+    res.status(201).json({message : "success"})
+});
+
+module.exports = { createConsultant,
+deleteConsultant };
