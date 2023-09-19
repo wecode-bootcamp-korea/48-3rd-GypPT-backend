@@ -28,11 +28,11 @@ const getExerciseList = async (memberId, weekday) => {
     const exerciseList = await dataSource.query(
       `
      SELECT 
-        id as exerciseId,
-        name as exerciseName,
-        description as exerciseDescription,
-        image_url as exerciseImageUrl,
-        checkbox as exerciseCheckbox
+        id,
+        name,
+        description,
+        image_url as imageUrl,
+        checkbox
      FROM exercises 
      WHERE member_id = ?
      AND weekday = ?;
@@ -52,10 +52,14 @@ const getDietList = async (memberId, weekday) => {
     const dietList = await dataSource.query(
       `
      SELECT 
-        id as dietId,
-        name as dietName,
-        description as dietDescription
-     FROM diets
+        d.id as id,
+        d.name as name,
+        d.description as description,
+        i.image_url as imageUrl,
+        d.checkbox as checkbox
+     FROM diets d
+     LEFT JOIN diet_images i
+     ON d.id = i.diet_id
      WHERE member_id = ?
      AND weekday = ?;
     `,
@@ -107,10 +111,50 @@ const getMembershipIdByUser = async (userId) => {
   }
 };
 
+const checkExercise = async (checkbox, memberId, weekday, exerciseId) => {
+  try {
+    return await dataSource.query(
+      `
+    UPDATE exercises
+    SET checkbox = ?
+    WHERE member_id = ?
+    AND weekday = ?
+    ANd id = ?;
+    `,
+      [checkbox, memberId, weekday, exerciseId]
+    );
+  } catch {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+const checkDiet = async (checkbox, memberId, weekday, dietId) => {
+  try {
+    return await dataSource.query(
+      `
+    UPDATE diets
+    SET checkbox = ?
+    WHERE member_id = ?
+    AND weekday = ?
+    ANd id = ?;
+    `,
+      [checkbox, memberId, weekday, dietId]
+    );
+  } catch {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getExerciseList,
   getDietList,
   getMembershipByUser,
   membershipStart,
   getMembershipIdByUser,
+  checkExercise,
+  checkDiet,
 };

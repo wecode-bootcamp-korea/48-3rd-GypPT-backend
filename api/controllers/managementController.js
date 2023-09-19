@@ -22,4 +22,29 @@ const membershipStart = catchAsync(async (req, res) => {
   res.status(200).json({ message: 'SUCCESS' });
 });
 
-module.exports = { getManagement, membershipStart };
+const checkExercise = catchAsync(async (req, res) => {
+  const memberId = req.user.userId;
+  const { id, checked, selectedDate } = req.body;
+  const checkbox = checked;
+  const weekday = selectedDate;
+  const exerciseId = id;
+  await managementService.checkExercise(
+    checkbox,
+    memberId,
+    weekday,
+    exerciseId
+  );
+  res.status(200).json({ message: 'SUCCESS' });
+});
+
+const checkDiet = catchAsync(async (req, res) => {
+  const memberId = req.user.userId;
+  const { id, checked, selectedDate } = req.body;
+  const checkbox = checked;
+  const weekday = selectedDate;
+  const dietId = id;
+  await managementService.checkDiet(checkbox, memberId, weekday, dietId);
+  res.status(200).json({ message: 'SUCCESS' });
+});
+
+module.exports = { getManagement, membershipStart, checkExercise, checkDiet };
