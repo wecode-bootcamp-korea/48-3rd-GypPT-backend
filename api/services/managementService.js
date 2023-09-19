@@ -12,9 +12,9 @@ const getManagement = async (userId, weekday) => {
   ]);
 
   return {
-    membership: membershipResult[0],
-    exercise: exerciseResult[0],
-    diet: dietResult[0],
+    membership: membershipResult,
+    exercise: exerciseResult,
+    diet: dietResult,
   };
 };
 
@@ -30,4 +30,17 @@ const membershipStart = async (userId, startDate, endDate) => {
   );
 };
 
-module.exports = { getManagement, membershipStart };
+const checkExercise = async (checkbox, memberId, weekday, exerciseId) => {
+  return await managementDao.checkExercise(
+    checkbox,
+    memberId,
+    weekday,
+    exerciseId
+  );
+};
+
+const checkDiet = async (checkbox, memberId, weekday, dietId) => {
+  return await managementDao.checkDiet(checkbox, memberId, weekday, dietId);
+};
+
+module.exports = { getManagement, membershipStart, checkExercise, checkDiet };

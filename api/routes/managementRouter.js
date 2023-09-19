@@ -10,5 +10,14 @@ managementRouter.post(
   loginRequired,
   managementController.membershipStart
 );
-
+managementRouter.post(
+  '/checkExercise',
+  loginRequired,
+  managementController.checkExercise
+);
+managementRouter.post(
+  '/checkDiet',
+  loginRequired,
+  managementController.checkDiet
+);
 module.exports = { managementRouter };
