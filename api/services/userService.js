@@ -4,9 +4,9 @@ const axios = require('axios');
 
 const getRedirectUri = async (endPoint) => {
   switch (endPoint) {
-    case '/kakaoSignIn':
+    case '/kakao-sign-in':
       return process.env.SIGN_IN_REDIRECT_URI;
-    case '/kakaoSignUp':
+    case '/kakao-sign-up':
       return process.env.SIGN_UP_REDIRECT_URI;
   }
 };
