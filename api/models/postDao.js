@@ -56,7 +56,7 @@ const getPostListDetail = async (postId) => {
       SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
         'commentId', c.id,
-        'commentTime', DATE_FORMAT(c.created_at, '%Y-%m-%d'),
+        'commentTime', DATE_FORMAT(c.created_at, '%Y.%m.%d'),
         'nickname', cu.nickname,
         'content', c.content
         )
@@ -97,4 +97,30 @@ const getCommentsCountForThread = async (threadId) => {
   return result[0].commentCount;
 };
 
-module.exports = { getPostListAll, getPostListDetail };
+const postCommunity = async (userId, category, title, content) => {
+  try {
+    const result = await dataSource.query(
+      `
+      INSERT INTO threads (
+        user_id,
+        thread_types_id,
+        title,
+        content
+      ) VALUES (
+      ?,
+      ?,
+      ?,
+      ?
+      )
+      `,
+      [userId, category, title, content]
+    );
+    const insertThreadId = result.insertId;
+    return insertThreadId;
+  } catch (error) {
+    console.error('Error in postCommunity:', error);
+    throw new error('Internal Server Error');
+  }
+};
+
+module.exports = { getPostListAll, getPostListDetail, postCommunity };
