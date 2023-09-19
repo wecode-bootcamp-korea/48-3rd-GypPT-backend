@@ -32,14 +32,13 @@ const payForMembership = catchAsync(async (req, res) => {
     paymentsMethodId
   );
 
-  res.locals.grade = await userService.getGrade(
-    res.locals.userType,
-    req.user.email
-  );
+  const token = await userService.createToken(req.user.email);
 
-  res
-    .status(200)
-    .json({ message: 'Payment completed', data: paymentInformation });
+  res.status(200).json({
+    message: 'Payment completed',
+    authorization: token,
+    data: paymentInformation,
+  });
 });
 
 module.exports = {
