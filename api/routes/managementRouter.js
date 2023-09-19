@@ -15,6 +15,7 @@ managementRouter.post(
   loginRequired,
   managementController.checkExercise
 );
+
 managementRouter.post(
   '/checkDiet',
   loginRequired,
