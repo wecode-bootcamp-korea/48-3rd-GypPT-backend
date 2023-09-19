@@ -133,6 +133,30 @@ const getGrade = async (userType, email) => {
   }
 };
 
+const getMyPage = async (userId) => {
+  try {
+    const membership = await dataSource.query(
+      `
+      SELECT
+        u.nickname,
+        g.emoji as emoji,
+        p.height as height,
+        p.weight as weight
+      FROM users u
+      JOIN member_profiles p ON u.id = p.user_id
+      JOIN member_grades g ON p.member_grade_id = g.id
+      WHERE u.id = ?;
+    `,
+      [userId]
+    );
+    return membership[0];
+  } catch {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getUserByEmail,
   createUser,
@@ -140,4 +164,5 @@ module.exports = {
   addAdditionalInfo,
   getUserType,
   getGrade,
+  getMyPage,
 };

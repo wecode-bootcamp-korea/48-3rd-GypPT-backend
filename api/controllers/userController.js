@@ -69,8 +69,17 @@ const checkDuplicateNickname = catchAsync(async (req, res) => {
       });
 });
 
+const getMyPage = async (req, res) => {
+  const userId = req.user.userId;
+
+  const myPage = await userService.getMyPage(userId);
+
+  res.status(200).json({ myPage });
+};
+
 module.exports = {
   kakaoSignIn,
   kakaoSignUp,
   checkDuplicateNickname,
+  getMyPage,
 };

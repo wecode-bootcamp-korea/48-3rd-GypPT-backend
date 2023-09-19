@@ -94,6 +94,10 @@ const getGrade = async (userType, email) => {
   return userGrade;
 };
 
+const getMyPage = async (userId) => {
+  return await userDao.getMyPage(userId);
+};
+
 module.exports = {
   getRedirectUri,
   getKaKaoAccessToken,
@@ -106,4 +110,5 @@ module.exports = {
   checkDuplicateNickname,
   addAdditionalInfo,
   getGrade,
+  getMyPage,
 };
