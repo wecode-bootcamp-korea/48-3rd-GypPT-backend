@@ -1,5 +1,6 @@
 const express = require('express');
 const managementRouter = express.Router();
+const { upload } = require('../utils/aws');
 
 const managementController = require('../controllers/managementController');
 const { loginRequired } = require('../utils/auth');
@@ -26,4 +27,12 @@ managementRouter.get(
   loginRequired,
   managementController.checkThreadId
 );
+
+managementRouter.post(
+  '/diet-image',
+  loginRequired,
+  upload.single('selectedFile'),
+  managementController.addDietImage
+);
+
 module.exports = { managementRouter };

@@ -13,14 +13,17 @@ const getPostListDetail = catchAsync(async (req, res) => {
 });
 
 const postCommunity = catchAsync(async (req, res) => {
-  const { userId, category, title, content } = req.body;
+  const userId = req.user.userId;
+  const { category, title, content } = req.body;
+  const imageUrls = req.files.map((file) => file.location);
   const thread = await postService.postCommunity(
     userId,
     category,
     title,
-    content
+    content,
+    imageUrls
   );
-  res.status(201).json({ message: 'Post created successfully', thread });
+  res.status(201).json({ message: 'Post created successfully', id: thread });
 });
 
 module.exports = { getPostListAll, getPostListDetail, postCommunity };

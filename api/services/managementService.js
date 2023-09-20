@@ -52,10 +52,15 @@ const getThreadId = async (userId, trainerId) => {
   return result;
 };
 
+const addDietImage = async (dietId, imageUrl) => {
+  await managementDao.addDietImage(dietId, imageUrl);
+};
+
 module.exports = {
   getManagement,
   membershipStart,
   checkExercise,
   checkDiet,
   getThreadId,
+  addDietImage,
 };
