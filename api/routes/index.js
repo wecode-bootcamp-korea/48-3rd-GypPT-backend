@@ -5,8 +5,11 @@ const { managementRouter } = require('./managementRouter');
 
 const router = express.Router();
 
-router.use('/user', userRouter);
 router.use('/trainers', trainerRouter);
 router.use('/custom', managementRouter);
+router.use("/consultant", consultantRouter);
+router.use('/users', userRouter);
+router.use('/community', postRouter);
+router.use('/payments', paymentRouter);
 
 module.exports = { router };

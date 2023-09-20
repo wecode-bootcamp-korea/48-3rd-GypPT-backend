@@ -8,7 +8,7 @@ const createConsultant = catchAsync(async (req, res) => {
     
         const thread = await consultantService.createConsultThreads(userId, threadTypesId, content, trainerId);
 
-        res.status(201).json({message : "success"})   
+        res.status(201).json({message :"success"})   
     });
 
 const deleteConsultant = catchAsync(async (req, res) => {
@@ -20,5 +20,19 @@ const deleteConsultant = catchAsync(async (req, res) => {
     res.status(201).json({message : "success"})
 });
 
-module.exports = { createConsultant,
-deleteConsultant };
+const getConsultant = catchAsync(async (req, res) => {
+   const userId = req.params.userId;
+
+   const threadTypesId =  req.params.thread_types_id;
+
+    const list = await consultantService.getConsultantList(userId, threadTypesId);
+
+    res.status(201).json({message : list})
+    
+
+})
+
+module.exports = { 
+    createConsultant,
+    deleteConsultant,
+    getConsultant };

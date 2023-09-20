@@ -8,8 +8,15 @@ const createConsultThreads = async (userId, threadTypesId, content, trainerId) =
 
 const deleteConsultantThreads = async (threadId) => {
     const result = await consultantDao.deleteConsultant(threadId)
-    return result
-}
+    return result;
+};
 
-module.exports = { createConsultThreads,
-deleteConsultantThreads };
+const getConsultantList = async (userId, threadTypesId) => {
+  const result = await consultantDao.getConsultant(userId, threadTypesId);
+  return result;
+};
+
+module.exports = { 
+  createConsultThreads,
+  deleteConsultantThreads,
+  getConsultantList };

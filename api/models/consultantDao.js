@@ -56,4 +56,50 @@ const createConsultant = async (userId, threadTypesId, content, trainerProfileId
         }
     };
 
-    module.exports = { createConsultant, deleteConsultant };
+    const getConsultant = async(userId, threadTypesId) => {
+        console.log("model" ,userId, threadTypesId);
+        
+    try {
+        const data = await dataSource.query(
+        `
+        select 
+        t.id as thread_id, 
+        t.thread_types_id, 
+        t.content, 
+        t.trainer_profile_id,
+        t.created_at, 
+        tt.name as threadTypeName, 
+        u.nickname as trainerNickname, 
+        u.profile_image as trainerProfileImage,
+        tg.name as emojiName
+        from threads t 
+        
+        join thread_types tt 
+        
+        on tt.id = t.thread_types_id 
+        
+        join trainer_profiles tp 
+        
+        on tp.id = t.trainer_profile_id
+        
+        Join users u
+        
+        On t.user_id = u.id
+        
+        Join trainer_grades tg
+        
+        On tg.id = tp.trainer_grade_id
+
+        WHERE t.user_id = ? AND tt.id = ?
+        `,
+        [userId, 3]
+        );
+        return data;
+
+    } catch{
+    const error = new Error("error");
+    error.statusCode = 400;
+    throw error;  
+    }
+    };
+    module.exports = { createConsultant, deleteConsultant, getConsultant };
