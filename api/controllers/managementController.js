@@ -55,10 +55,18 @@ const checkThreadId = catchAsync(async (req, res) => {
   res.status(200).json({ message: result });
 });
 
+const addDietImage = catchAsync(async (req, res) => {
+  const { dietId } = req.query;
+  const imageUrl = req.file.location;
+  await managementService.addDietImage(dietId, imageUrl);
+  res.status(200).json({ message: 'SUCCESS' });
+});
+
 module.exports = {
   getManagement,
   membershipStart,
   checkExercise,
   checkDiet,
   checkThreadId,
+  addDietImage,
 };

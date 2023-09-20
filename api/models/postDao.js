@@ -97,7 +97,7 @@ const getCommentsCountForThread = async (threadId) => {
   return result[0].commentCount;
 };
 
-const postCommunity = async (userId, category, title, content) => {
+const postCommunity = async (userId, category, title, content, imageUrls) => {
   try {
     const result = await dataSource.query(
       `
@@ -116,11 +116,35 @@ const postCommunity = async (userId, category, title, content) => {
       [userId, category, title, content]
     );
     const insertThreadId = result.insertId;
-    return insertThreadId;
+    if (!imageUrls) {
+      return insertThreadId;
+    } else {
+      for (imageUrl of imageUrls) {
+        addPostImage(insertThreadId, imageUrl);
+        return insertThreadId;
+      }
+    }
   } catch (error) {
     console.error('Error in postCommunity:', error);
     throw new error('Internal Server Error');
   }
 };
 
-module.exports = { getPostListAll, getPostListDetail, postCommunity };
+const addPostImage = async (threadId, imageUrl) => {
+  try {
+    dataSource.query(
+      `INSERT INTO thread_images (thread_id, image_url) VALUES (?,?)`,
+      [threadId, imageUrl]
+    );
+  } catch (err) {
+    const newError = new Error('dataSource Error');
+    newError.status = 400;
+    throw newError;
+  }
+};
+
+module.exports = {
+  getPostListAll,
+  getPostListDetail,
+  postCommunity,
+};

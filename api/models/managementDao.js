@@ -173,6 +173,19 @@ const getThreadId = async (userId, trainerId) => {
   }
 };
 
+const addDietImage = async (dietId, imageUrl) => {
+  try {
+    await dataSource.query(
+      `INSERT INTO diet_images (diet_id, image_url) VALUES (?,?)`,
+      [dietId, imageUrl]
+    );
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getExerciseList,
   getDietList,
@@ -182,4 +195,5 @@ module.exports = {
   checkExercise,
   checkDiet,
   getThreadId,
+  addDietImage,
 };
