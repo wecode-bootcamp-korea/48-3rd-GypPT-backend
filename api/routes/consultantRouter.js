@@ -1,12 +1,29 @@
-const express = require("express");
+const express = require('express');
 
-const consultantController = require("../controllers/consultantController");
+const consultantController = require('../controllers/consultantController');
 const consultantRouter = express.Router();
 
-const { loginRequired } = require("../utils/auth");
+const { loginRequired } = require('../utils/auth');
 
-consultantRouter.post("/posts/upload", consultantController.createConsultant);
-consultantRouter.delete("/posts/:postId", consultantController.deleteConsultant);
-consultantRouter.get("/posts/list/:thread_types_id", consultantController.getConsultant)
+consultantRouter.post(
+  '/posts/upload',
+  loginRequired,
+  consultantController.createConsultant
+);
+consultantRouter.delete(
+  '/posts/:postId',
+  loginRequired,
+  consultantController.deleteConsultant
+);
+consultantRouter.get(
+  '/posts/list/:thread_types_id',
+  loginRequired,
+  consultantController.getConsultant
+);
+consultantRouter.get(
+  '/posts/:trainer_profiles_id',
+  loginRequired,
+  consultantController.getConsultantDetail
+);
 
 module.exports = { consultantRouter };

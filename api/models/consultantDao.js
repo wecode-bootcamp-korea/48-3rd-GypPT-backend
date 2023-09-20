@@ -105,4 +105,57 @@ const getConsultant = async (userId, threadTypesId) => {
     throw error;
   }
 };
-module.exports = { createConsultant, deleteConsultant, getConsultant };
+
+const getConsultantDetail = async (trainerProfileId, threadId) => {
+  try {
+    const data = await dataSource.query(
+      `
+SELECT
+t.id AS threadId,
+u.profile_image AS trainerProfileImage,
+(select u.nickname
+from users u 
+left join trainer_profiles t
+on u.id = t.user_id
+where t.id = tp.id)AS trainerNickname,
+tg.name AS trainerEmojiName,
+mg.name AS userEmojiName,
+u.nickname AS userNickname,
+t.content,
+t.created_at AS createdAt,
+JSON_ARRAYAGG(
+JSON_OBJECT(
+'commentId', c.id,
+'nickname', cu.nickname,
+'content', c.content,
+'emojiName', mg.emoji,
+'commentAt', c.created_at
+)
+) AS comments
+FROM threads t
+LEFT JOIN users u ON u.id = t.user_id
+LEFT JOIN member_profiles mp ON mp.user_id = u.id
+LEFT JOIN member_grades mg ON mp.member_grade_id = mg.id
+LEFT JOIN comments c ON c.thread_id = t.id
+LEFT JOIN users cu ON cu.id = c.user_id
+LEFT JOIN trainer_profiles tp ON tp.id = t.trainer_profile_id
+LEFT JOIN users tu ON tu.id = tp.user_id
+LEFT JOIN trainer_grades tg ON tg.id = tp.trainer_grade_id
+WHERE t.id = ?
+GROUP BY t.id, mg.name, u.nickname, u.profile_image, t.content, t.created_at, tu.nickname, tg.name;
+`,
+      [trainerProfileId, threadId]
+    );
+    return data;
+  } catch {
+    const error = new Error('error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+module.exports = {
+  createConsultant,
+  deleteConsultant,
+  getConsultant,
+  getConsultantDetail,
+};
