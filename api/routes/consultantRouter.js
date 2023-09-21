@@ -26,4 +26,10 @@ consultantRouter.get(
   consultantController.getConsultantDetail
 );
 
+consultantRouter.post(
+  '/posts',
+  loginRequired,
+  consultantController.addConsultantComment
+);
+
 module.exports = { consultantRouter };

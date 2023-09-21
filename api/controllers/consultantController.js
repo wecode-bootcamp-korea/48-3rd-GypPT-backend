@@ -45,9 +45,33 @@ const getConsultantDetail = catchAsync(async (req, res) => {
   res.status(201).json({ data: detailList });
 });
 
+const addConsultantComment = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const userType = res.locals.userType;
+  const { postId: threadId } = req.query;
+  const { content } = req.body;
+  const commentsTypeId = await consultantService.getCommentsTypeId(userType);
+
+  if (!content) {
+    const error = new Error('KEY_ERROR');
+    error.statusCode = 400;
+
+    throw error;
+  } else {
+    await consultantService.addConsultantComment(
+      userId,
+      threadId,
+      commentsTypeId,
+      content
+    );
+    res.status(201).json({ message: 'CREATE COMMENT SUCCESS' });
+  }
+});
+
 module.exports = {
   createConsultant,
   deleteConsultant,
   getConsultant,
   getConsultantDetail,
+  addConsultantComment,
 };
