@@ -70,7 +70,7 @@ const getConsultant = async (userId, threadTypesId) => {
         t.id as thread_id, 
         t.thread_types_id, 
         t.content, 
-        t.trainer_profile_id,
+        t.trainer_profile_id AS trainerId,
         t.created_at, 
         tt.name as threadTypeName, 
         u.nickname as trainerNickname, 
@@ -106,13 +106,12 @@ const getConsultant = async (userId, threadTypesId) => {
   }
 };
 
-const getConsultantDetail = async (trainerProfileId, threadId) => {
+const getConsultantDetail = async (trainerProfileId, userId) => {
   try {
     const data = await dataSource.query(
       `
 SELECT
 t.id AS threadId,
-u.profile_image AS trainerProfileImage,
 (select u.nickname
 from users u 
 left join trainer_profiles t
@@ -128,7 +127,7 @@ JSON_OBJECT(
 'commentId', c.id,
 'nickname', cu.nickname,
 'content', c.content,
-'emojiName', mg.emoji,
+'emojiName', mg.name,
 'commentAt', c.created_at
 )
 ) AS comments
@@ -141,10 +140,10 @@ LEFT JOIN users cu ON cu.id = c.user_id
 LEFT JOIN trainer_profiles tp ON tp.id = t.trainer_profile_id
 LEFT JOIN users tu ON tu.id = tp.user_id
 LEFT JOIN trainer_grades tg ON tg.id = tp.trainer_grade_id
-WHERE t.id = ?
+WHERE tp.id = ? AND u.id =?
 GROUP BY t.id, mg.name, u.nickname, u.profile_image, t.content, t.created_at, tu.nickname, tg.name;
 `,
-      [trainerProfileId, threadId]
+      [trainerProfileId, userId]
     );
     return data;
   } catch {
@@ -166,6 +165,7 @@ const addConsultantComment = async (
       [userId, threadId, commentsTypeId, content]
     );
   } catch (err) {
+    console.log(err);
     const error = new Error('dataSource Error');
     error.statusCode = 400;
     throw error;

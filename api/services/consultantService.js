@@ -4,13 +4,13 @@ const createConsultThreads = async (
   userId,
   threadTypesId,
   content,
-  trainerId
+  trainerProfileId
 ) => {
   const result = await consultantDao.createConsultant(
     userId,
     threadTypesId,
     content,
-    trainerId
+    trainerProfileId
   );
 
   return result;
@@ -27,10 +27,10 @@ const getConsultantList = async (userId, threadTypesId) => {
   return result;
 };
 
-const getConsultantDetailList = async (trainerProfileId, threadId) => {
+const getConsultantDetailList = async (trainerProfileId, userId) => {
   const result = await consultantDao.getConsultantDetail(
     trainerProfileId,
-    threadId
+    userId
   );
 
   return result;

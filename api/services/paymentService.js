@@ -11,7 +11,9 @@ const getMatchingTrainer = async (trainerId, memberId) => {
     trainerId,
     memberId
   );
-  if (matchingTrainer.length === 0) throw new Error('Trainer not found');
+  if (!matchingTrainer) {
+    throw new Error('Trainer not found');
+  }
   return matchingTrainer;
 };
 
