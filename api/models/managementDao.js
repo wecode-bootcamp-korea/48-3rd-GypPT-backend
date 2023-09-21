@@ -149,6 +149,30 @@ const checkDiet = async (checkbox, memberId, weekday, dietId) => {
   }
 };
 
+const getThreadId = async (userId, trainerId) => {
+  try {
+    let trainerProfileId = await dataSource.query(
+      `
+    SELECT id
+    FROM threads
+    WHERE user_id = ?
+    AND trainer_profile_id = ?;
+    `,
+      [userId, trainerId]
+    );
+    if (trainerProfileId.length === 0) {
+      trainerProfileId = null;
+      return trainerProfileId;
+    } else {
+      return trainerProfileId[0].id;
+    }
+  } catch {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   getExerciseList,
   getDietList,
@@ -157,4 +181,5 @@ module.exports = {
   getMembershipIdByUser,
   checkExercise,
   checkDiet,
+  getThreadId,
 };

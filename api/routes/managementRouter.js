@@ -20,4 +20,10 @@ managementRouter.post(
   loginRequired,
   managementController.checkDiet
 );
+
+managementRouter.get(
+  '/checkId',
+  loginRequired,
+  managementController.checkThreadId
+);
 module.exports = { managementRouter };
