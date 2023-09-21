@@ -121,8 +121,8 @@ const postCommunity = async (userId, category, title, content, imageUrls) => {
     } else {
       for (imageUrl of imageUrls) {
         addPostImage(insertThreadId, imageUrl);
-        return insertThreadId;
       }
+      return insertThreadId;
     }
   } catch (error) {
     console.error('Error in postCommunity:', error);
