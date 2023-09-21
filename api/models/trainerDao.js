@@ -1,11 +1,10 @@
 const { dataSource } = require('./dataSource');
-
 const getTrainerList = async (offset, pageSize) => {
   try {
     const data = await dataSource.query(
       `
       SELECT
-        u.id,
+        tp.id,
         tg.emoji,
         tg.name emojiName,
         u.nickname nickName,

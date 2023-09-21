@@ -21,7 +21,7 @@ consultantRouter.get(
   consultantController.getConsultant
 );
 consultantRouter.get(
-  '/posts/:trainer_profiles_id',
+  '/posts',
   loginRequired,
   consultantController.getConsultantDetail
 );

@@ -64,7 +64,7 @@ const getMatchingTrainer = async (trainerId, memberId) => {
       FROM users u
       INNER JOIN trainer_profiles tp ON u.id = tp.user_id 
       INNER JOIN trainer_grades tg ON tg.id = tp.trainer_grade_id
-      WHERE u.id = ? 
+      WHERE tp.id = ? 
       AND EXISTS (SELECT 1 FROM users WHERE id = ?);
       `,
       [trainerId, memberId]
