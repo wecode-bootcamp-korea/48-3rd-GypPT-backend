@@ -11,7 +11,7 @@ const router = express.Router();
 router.use('/trainers', trainerRouter);
 router.use('/custom', managementRouter);
 router.use('/consultant', consultantRouter);
-router.use('/user', userRouter);
+router.use('/users', userRouter);
 router.use('/community', postRouter);
 router.use('/payments', paymentRouter);
 
