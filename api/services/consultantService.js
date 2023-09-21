@@ -36,9 +36,29 @@ const getConsultantDetailList = async (trainerProfileId, threadId) => {
   return result;
 };
 
+const addConsultantComment = async (
+  userId,
+  threadId,
+  commentsTypeId,
+  content
+) => {
+  await consultantDao.addConsultantComment(
+    userId,
+    threadId,
+    commentsTypeId,
+    content
+  );
+};
+
+const getCommentsTypeId = async (userType) => {
+  return await consultantDao.getCommentsTypeId(userType);
+};
+
 module.exports = {
   createConsultThreads,
   deleteConsultantThreads,
   getConsultantList,
   getConsultantDetailList,
+  addConsultantComment,
+  getCommentsTypeId,
 };

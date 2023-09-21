@@ -153,9 +153,44 @@ GROUP BY t.id, mg.name, u.nickname, u.profile_image, t.content, t.created_at, tu
     throw error;
   }
 };
+
+const addConsultantComment = async (
+  userId,
+  threadId,
+  commentsTypeId,
+  content
+) => {
+  try {
+    await dataSource.query(
+      `INSERT INTO comments (user_id, thread_id, comment_types_id, content) VALUES (?,?,?,?)`,
+      [userId, threadId, commentsTypeId, content]
+    );
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
+const getCommentsTypeId = async (userType) => {
+  try {
+    const [{ id: commentsTypeId }] = await dataSource.query(
+      `SELECT id FROM comment_types ct WHERE ct.name=?`,
+      [userType]
+    );
+    return commentsTypeId;
+  } catch (err) {
+    const error = new Error('dataSource Error');
+    error.statusCode = 400;
+    throw error;
+  }
+};
+
 module.exports = {
   createConsultant,
   deleteConsultant,
   getConsultant,
   getConsultantDetail,
+  addConsultantComment,
+  getCommentsTypeId,
 };
