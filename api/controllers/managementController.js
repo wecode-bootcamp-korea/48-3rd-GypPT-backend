@@ -47,4 +47,18 @@ const checkDiet = catchAsync(async (req, res) => {
   res.status(200).json({ message: 'SUCCESS' });
 });
 
-module.exports = { getManagement, membershipStart, checkExercise, checkDiet };
+const checkThreadId = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const { trainerId } = req.query;
+
+  const result = await managementService.getThreadId(userId, trainerId);
+  res.status(200).json({ message: result });
+});
+
+module.exports = {
+  getManagement,
+  membershipStart,
+  checkExercise,
+  checkDiet,
+  checkThreadId,
+};

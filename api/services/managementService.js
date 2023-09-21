@@ -43,4 +43,19 @@ const checkDiet = async (checkbox, memberId, weekday, dietId) => {
   return await managementDao.checkDiet(checkbox, memberId, weekday, dietId);
 };
 
-module.exports = { getManagement, membershipStart, checkExercise, checkDiet };
+const getThreadId = async (userId, trainerId) => {
+  let trainerProfileId = await managementDao.getThreadId(userId, trainerId);
+  let result = 'TRUE';
+  if (trainerProfileId == null) {
+    result = 'FALSE';
+  }
+  return result;
+};
+
+module.exports = {
+  getManagement,
+  membershipStart,
+  checkExercise,
+  checkDiet,
+  getThreadId,
+};
