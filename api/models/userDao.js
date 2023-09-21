@@ -18,7 +18,7 @@ const getUserByEmail = async (email) => {
       mm.membership_id AS membershipId,
       mm.start_date AS startDate,
       mm.end_date AS endDate
-    FROM USERS u
+    FROM users u
     LEFT JOIN member_profiles mp ON u.id = mp.user_id
     LEFT JOIN members_memberships mm ON u.id = mm.member_id
     WHERE u.email = ?;
