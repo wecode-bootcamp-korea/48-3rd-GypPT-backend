@@ -2,14 +2,14 @@ const consultantService = require('../services/consultantService');
 const { catchAsync } = require('../utils/error');
 
 const createConsultant = catchAsync(async (req, res) => {
-  const { content, trainerProfileId, threadTypesId = 3 } = await req.body;
+  const { content, trainerId, threadTypesId = 3 } = await req.body;
   const userId = req.user.userId;
 
   await consultantService.createConsultThreads(
     userId,
     threadTypesId,
     content,
-    trainerProfileId
+    trainerId
   );
 
   res.status(201).json({ message: 'success' });
