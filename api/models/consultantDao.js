@@ -9,18 +9,18 @@ const createConsultant = async (
   try {
     await dataSource.query(
       `
-    INSERT INTO threads (
-        user_id,
-        thread_types_id,
-        content,
-        trainer_profile_id
-    ) VALUES (
-        ?,
-        ?,
-        ?,
-        ?
-    )
-     `,
+      INSERT INTO threads (
+          user_id,
+          thread_types_id,
+          content,
+          trainer_profile_id
+      ) VALUES (
+          ?,
+          ?,
+          ?,
+          ?
+      )
+      `,
       [userId, threadTypesId, content, trainerProfileId]
     );
   } catch {
@@ -38,16 +38,16 @@ const deleteConsultant = async (threadId) => {
   try {
     await queryRunner.query(
       `
-                DELETE FROM comments
-                WHERE thread_id = ?
-                `,
+      DELETE FROM comments
+      WHERE thread_id = ?
+      `,
       [threadId]
     );
     await queryRunner.query(
       `
-            DELETE FROM threads
-            WHERE id = ?
-            `,
+      DELETE FROM threads
+      WHERE id = ?
+      `,
       [threadId]
     );
 
@@ -66,36 +66,23 @@ const getConsultant = async (userId, threadTypesId) => {
   try {
     const data = await dataSource.query(
       `
-        select 
-        t.id as thread_id, 
-        t.thread_types_id, 
-        t.content, 
-        t.trainer_profile_id AS trainerId,
-        t.created_at, 
-        tt.name as threadTypeName, 
-        u.nickname as trainerNickname, 
-        u.profile_image as trainerProfileImage,
-        tg.name as emojiName
-        from threads t 
-        
-        join thread_types tt 
-        
-        on tt.id = t.thread_types_id 
-        
-        join trainer_profiles tp 
-        
-        on tp.id = t.trainer_profile_id
-        
-        Join users u
-        
-        On t.user_id = u.id
-        
-        Join trainer_grades tg
-        
-        On tg.id = tp.trainer_grade_id
-
-        WHERE t.user_id = ? AND tt.id = ?
-        `,
+      SELECT
+          t.id AS thread_id,
+          t.thread_types_id,
+          t.content,
+          t.trainer_profile_id AS trainerId,
+          t.created_at,
+          tt.name AS threadTypeName,
+          u.nickname AS trainerNickname,
+          u.profile_image AS trainerProfileImage,
+          tg.name AS emojiName
+      FROM threads t
+      JOIN thread_types tt ON tt.id = t.thread_types_id
+      JOIN trainer_profiles tp ON tp.id = t.trainer_profile_id
+      JOIN users u ON t.trainer_profile_id = u.id
+      JOIN trainer_grades tg ON tg.id = tp.trainer_grade_id
+      WHERE t.user_id = ? AND tt.id = ?;
+      `,
       [userId, threadTypesId]
     );
     return data;
@@ -110,39 +97,45 @@ const getConsultantDetail = async (trainerProfileId, userId) => {
   try {
     const data = await dataSource.query(
       `
-SELECT
-t.id AS threadId,
-(select u.nickname
-from users u 
-left join trainer_profiles t
-on u.id = t.user_id
-where t.id = tp.id)AS trainerNickname,
-tg.name AS trainerEmojiName,
-mg.name AS userEmojiName,
-u.nickname AS userNickname,
-t.content,
-t.created_at AS createdAt,
-JSON_ARRAYAGG(
-JSON_OBJECT(
-'commentId', c.id,
-'nickname', cu.nickname,
-'content', c.content,
-'emojiName', mg.name,
-'commentAt', c.created_at
-)
-) AS comments
-FROM threads t
-LEFT JOIN users u ON u.id = t.user_id
-LEFT JOIN member_profiles mp ON mp.user_id = u.id
-LEFT JOIN member_grades mg ON mp.member_grade_id = mg.id
-LEFT JOIN comments c ON c.thread_id = t.id
-LEFT JOIN users cu ON cu.id = c.user_id
-LEFT JOIN trainer_profiles tp ON tp.id = t.trainer_profile_id
-LEFT JOIN users tu ON tu.id = tp.user_id
-LEFT JOIN trainer_grades tg ON tg.id = tp.trainer_grade_id
-WHERE tp.id = ? AND u.id =?
-GROUP BY t.id, mg.name, u.nickname, u.profile_image, t.content, t.created_at, tu.nickname, tg.name;
-`,
+      SELECT
+          t.id AS threadId,
+          (
+              SELECT u.nickname
+              FROM users u
+              LEFT JOIN trainer_profiles t ON u.id = t.user_id
+              WHERE t.id = tp.id
+          ) AS trainerNickname,
+          tg.name AS trainerEmojiName,
+          mg.name AS userEmojiName,
+          u.nickname AS userNickname,
+          t.content,
+          t.created_at AS createdAt,
+          JSON_ARRAYAGG(
+              JSON_OBJECT(
+                  'id', c.user_id,
+                  'nickname', cu.nickname,
+                  'content', c.content,
+                  'emojiName',
+                      CASE
+                          WHEN c.user_id IN (SELECT user_id FROM trainer_profiles) THEN tg.name
+                          WHEN c.user_id IN (SELECT user_id FROM member_profiles) THEN mg.name
+                          ELSE NULL
+                      END,
+                  'commentAt', c.created_at
+              )
+          ) AS comments
+      FROM threads t
+      LEFT JOIN users u ON u.id = t.user_id
+      LEFT JOIN member_profiles mp ON mp.user_id = u.id
+      LEFT JOIN member_grades mg ON mp.member_grade_id = mg.id
+      LEFT JOIN comments c ON c.thread_id = t.id
+      LEFT JOIN users cu ON cu.id = c.user_id
+      LEFT JOIN trainer_profiles tp ON tp.id = t.trainer_profile_id
+      LEFT JOIN users tu ON tu.id = tp.user_id
+      LEFT JOIN trainer_grades tg ON tg.id = tp.trainer_grade_id
+      WHERE tp.id = 13 AND u.id = 74
+      GROUP BY t.id, mg.name, u.nickname, u.profile_image, t.content, t.created_at, tu.nickname, tg.name;
+      `,
       [trainerProfileId, userId]
     );
     return data;
@@ -175,7 +168,7 @@ const addConsultantComment = async (
 const getCommentsTypeId = async (userType) => {
   try {
     const [{ id: commentsTypeId }] = await dataSource.query(
-      `SELECT id FROM comment_types ct WHERE ct.name=?`,
+      `SELECT id FROM comment_types ct WHERE ct.name = ?`,
       [userType]
     );
     return commentsTypeId;
